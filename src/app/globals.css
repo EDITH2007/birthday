@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+:root {
+  --color-base: #FFFBF2;
+  --color-ink: #1F2340;
+  --color-butter: #FFD35A;
+  --color-sky: #7CC6FE;
+  --color-mint: #7EE0B5;
+  --color-tangerine: #FF9F43;
+  --color-periwinkle: #8E9BFF;
+  --ease-primary: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  cursor: none;
+}
+
+@media (hover: none) {
+  *,
+  *::before,
+  *::after {
+    cursor: auto;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-base);
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide default cursor on desktop */
+@media (hover: hover) {
+  * {
+    cursor: none !important;
+  }
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(255, 211, 90, 0.35);
+  color: var(--color-ink);
+}
+
+/* ========================================
+   CONFETTI DRIFT ANIMATION
+   ======================================== */
+
+@keyframes confetti-drift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-15px) rotate(45deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(5px) rotate(90deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-10px) rotate(135deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(0) rotate(180deg);
+    opacity: 0.7;
+  }
+}
+
+.confetti-drift {
+  animation: confetti-drift var(--duration, 15s) ease-in-out infinite;
+}
+
+/* ========================================
+   BREATHING GLOW ANIMATION
+   ======================================== */
+
+@keyframes breathing-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 211, 90, 0.2), 0 0 40px rgba(255, 211, 90, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 211, 90, 0.35), 0 0 60px rgba(255, 211, 90, 0.15);
+  }
+}
+
+/* ========================================
+   GENTLE BOB ANIMATION
+   ======================================== */
+
+@keyframes gentle-bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ========================================
+   DRAW UNDERLINE ANIMATION
+   ======================================== */
+
+@keyframes draw-underline {
+  0% {
+    stroke-dashoffset: 400;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.draw-underline {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: draw-underline 1.5s var(--ease-primary) forwards;
+  animation-delay: 1.2s;
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .confetti-drift {
+    animation: none;
+  }
+
+  .draw-underline {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(31, 35, 64, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(31, 35, 64, 0.25);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.page-container {
+  min-height: 100dvh;
+  position: relative;
+}
