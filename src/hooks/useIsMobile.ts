@@ -2,17 +2,28 @@
 
 import { useEffect, useState } from 'react';
 
-/** Returns true on touch-primary devices (no fine pointer / no hover). */
+/** Returns true on touch-primary devices or screens under 768px width. */
 export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia('(hover: none)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    const checkMobile = () => {
+      const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+      const isSmallScreen = window.innerWidth < 768;
+      setIsMobile(isTouch || isSmallScreen);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    const mq = window.matchMedia('(hover: none), (pointer: coarse)');
+    mq.addEventListener('change', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      mq.removeEventListener('change', checkMobile);
+    };
   }, []);
 
   return isMobile;
 }
+

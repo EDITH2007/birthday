@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ========================================
-   BASE STYLES
+   BASE STYLES & FOUNDATIONS
    ======================================== */
 
 :root {
@@ -13,39 +13,60 @@
   --color-tangerine: #FF9F43;
   --color-periwinkle: #8E9BFF;
   --ease-primary: cubic-bezier(0.22, 1, 0.36, 1);
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
 }
 
 *,
 *::before,
 *::after {
-  cursor: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
-@media (hover: none) {
-  *,
-  *::before,
-  *::after {
-    cursor: auto;
-  }
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
 }
 
 html {
   scroll-behavior: smooth;
   background-color: var(--color-base);
+  overflow-x: clip;
+  width: 100%;
 }
 
 body {
   background-color: var(--color-base);
   color: var(--color-ink);
-  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide default cursor on desktop */
-@media (hover: hover) {
-  * {
+/* Hide default cursor ONLY on desktop fine pointer devices */
+@media (hover: hover) and (pointer: fine) {
+  *,
+  *::before,
+  *::after {
     cursor: none !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  *,
+  *::before,
+  *::after {
+    cursor: auto !important;
   }
 }
 
@@ -56,29 +77,29 @@ body {
 }
 
 /* ========================================
-   CONFETTI DRIFT ANIMATION
+   ANIMATIONS
    ======================================== */
 
 @keyframes confetti-drift {
   0% {
     transform: translateY(0) rotate(0deg);
-    opacity: 0.7;
+    opacity: 0.8;
   }
   25% {
-    transform: translateY(-15px) rotate(45deg);
-    opacity: 0.9;
+    transform: translateY(-18px) rotate(45deg);
+    opacity: 1;
   }
   50% {
-    transform: translateY(5px) rotate(90deg);
-    opacity: 0.6;
+    transform: translateY(6px) rotate(90deg);
+    opacity: 0.7;
   }
   75% {
-    transform: translateY(-10px) rotate(135deg);
-    opacity: 0.85;
+    transform: translateY(-12px) rotate(135deg);
+    opacity: 0.95;
   }
   100% {
     transform: translateY(0) rotate(180deg);
-    opacity: 0.7;
+    opacity: 0.8;
   }
 }
 
@@ -86,22 +107,14 @@ body {
   animation: confetti-drift var(--duration, 15s) ease-in-out infinite;
 }
 
-/* ========================================
-   BREATHING GLOW ANIMATION
-   ======================================== */
-
 @keyframes breathing-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 211, 90, 0.2), 0 0 40px rgba(255, 211, 90, 0.1);
+    box-shadow: 0 0 20px rgba(255, 211, 90, 0.25), 0 0 40px rgba(255, 211, 90, 0.12);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 211, 90, 0.35), 0 0 60px rgba(255, 211, 90, 0.15);
+    box-shadow: 0 0 35px rgba(255, 211, 90, 0.45), 0 0 70px rgba(255, 211, 90, 0.2);
   }
 }
-
-/* ========================================
-   GENTLE BOB ANIMATION
-   ======================================== */
 
 @keyframes gentle-bob {
   0%, 100% {
@@ -111,10 +124,6 @@ body {
     transform: translateY(-8px);
   }
 }
-
-/* ========================================
-   DRAW UNDERLINE ANIMATION
-   ======================================== */
 
 @keyframes draw-underline {
   0% {
@@ -132,8 +141,114 @@ body {
   animation-delay: 1.2s;
 }
 
+@keyframes marquee-scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-scroll-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-halo {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+@keyframes rotate-stars {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes bunting-sway {
+  0%, 100% {
+    transform: rotate(-1deg) translateX(0);
+  }
+  25% {
+    transform: rotate(0.5deg) translateX(3px);
+  }
+  75% {
+    transform: rotate(-0.5deg) translateX(-3px);
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scaleY(1) scaleX(1);
+  }
+  25% {
+    transform: scaleY(1.08) scaleX(0.95);
+  }
+  50% {
+    transform: scaleY(0.95) scaleX(1.05);
+  }
+  75% {
+    transform: scaleY(1.05) scaleX(0.97);
+  }
+}
+
+@keyframes rotate-circular-text {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lock-rattle {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-8deg); }
+  20% { transform: rotate(8deg); }
+  30% { transform: rotate(-6deg); }
+  40% { transform: rotate(6deg); }
+  50% { transform: rotate(-3deg); }
+  60% { transform: rotate(3deg); }
+  70% { transform: rotate(0deg); }
+}
+
 /* ========================================
-   REDUCED MOTION
+   REDUCED MOTION OVERRIDES
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -177,10 +292,26 @@ body {
 }
 
 /* ========================================
-   UTILITY CLASSES
+   UTILITY CLASSES & SAFE AREAS
    ======================================== */
 
 .page-container {
+  min-height: 100svh;
   min-height: 100dvh;
   position: relative;
+  overflow-x: clip;
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+}
+
+/* Paper texture overlay — very subtle dotted grid */
+.paper-texture::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.025;
+  background-image: radial-gradient(circle, #1F2340 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
 }

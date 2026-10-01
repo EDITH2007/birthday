@@ -13,12 +13,12 @@ interface Orb {
   speedY: number;
 }
 
+/* Only butter-yellow, sky-blue, mint and periwinkle — NO pink/peach/tangerine in glows */
 const COLORS = [
-  'rgba(255, 211, 90, 0.18)',   // butter yellow
-  'rgba(124, 198, 254, 0.15)',  // sky blue
-  'rgba(126, 224, 181, 0.15)',  // mint
-  'rgba(142, 155, 255, 0.12)',  // periwinkle
-  'rgba(255, 159, 67, 0.12)',   // tangerine
+  'rgba(255, 211, 90, 0.28)',
+  'rgba(124, 198, 254, 0.25)',
+  'rgba(126, 224, 181, 0.22)',
+  'rgba(142, 155, 255, 0.20)',
 ];
 
 export default function FloatingOrbs() {
@@ -27,17 +27,16 @@ export default function FloatingOrbs() {
   const isMobile = useIsMobile();
   const [orbs, setOrbs] = useState<Orb[]>([]);
 
-  // Generate random orbs only on client after mount to avoid hydration mismatch
   useEffect(() => {
-    const count = isMobile ? 3 : 5;
+    const count = isMobile ? 3 : 6;
     setOrbs(
       Array.from({ length: count }, (_, i) => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: 200 + Math.random() * 200,
+        size: isMobile ? 140 + Math.random() * 140 : 200 + Math.random() * 200,
         color: COLORS[i % COLORS.length],
         speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.2,
+        speedY: (Math.random() - 0.5) * 0.25,
       })),
     );
   }, [isMobile]);
@@ -51,16 +50,20 @@ export default function FloatingOrbs() {
     orbPosRef.current = orbs.map((o) => ({ x: o.x, y: o.y }));
 
     const animate = () => {
+      if (document.hidden) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       const container = containerRef.current;
       if (!container) return;
       const children = container.children;
 
       orbPosRef.current.forEach((pos, i) => {
         const orb = orbs[i];
-        pos.x += orb.speedX * 0.05;
-        pos.y += orb.speedY * 0.05;
+        pos.x += orb.speedX * 0.04;
+        pos.y += orb.speedY * 0.04;
 
-        // Gentle wrap
         if (pos.x > 110) pos.x = -10;
         if (pos.x < -10) pos.x = 110;
         if (pos.y > 110) pos.y = -10;
@@ -93,7 +96,7 @@ export default function FloatingOrbs() {
             width: orb.size,
             height: orb.size,
             background: `radial-gradient(circle, ${orb.color}, transparent 70%)`,
-            filter: 'blur(60px)',
+            filter: isMobile ? 'blur(20px)' : 'blur(45px)',
             willChange: 'transform',
             left: `${orb.x}%`,
             top: `${orb.y}%`,
@@ -103,3 +106,4 @@ export default function FloatingOrbs() {
     </div>
   );
 }
+

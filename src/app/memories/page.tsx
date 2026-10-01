@@ -30,10 +30,11 @@ export default function MemoriesPage() {
   // Final confetti shower
   useEffect(() => {
     if (!showClosing) return;
+    const isMobile = window.innerWidth < 768;
     const timer = setTimeout(() => {
       confetti({
-        particleCount: 150,
-        spread: 100,
+        particleCount: isMobile ? 60 : 140,
+        spread: 90,
         origin: { y: 0.3 },
         colors: ['#FFD35A', '#7CC6FE', '#7EE0B5', '#FF9F43', '#8E9BFF'],
         disableForReducedMotion: true,
@@ -62,16 +63,20 @@ export default function MemoriesPage() {
       <FloatingOrbs />
 
       {/* Opening title card */}
-      <section className="min-h-[70vh] flex items-center justify-center px-6 relative">
+      <section className="min-h-[50svh] min-h-[50dvh] sm:min-h-[70vh] flex items-center justify-center px-5 sm:px-6 relative py-12">
         <motion.div
-          className="text-center"
+          className="text-center max-w-xl"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: DURATION.slow, ease: EASE_PRIMARY }}
         >
           <motion.h1
             className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight"
-            style={{ fontFamily: 'var(--font-fraunces)', color: '#1F2340' }}
+            style={{
+              fontFamily: 'var(--font-fraunces)',
+              color: '#1F2340',
+              textWrap: 'balance',
+            }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...SPRING_PLAYFUL, delay: 0.3 }}
@@ -99,14 +104,14 @@ export default function MemoriesPage() {
       </section>
 
       {/* Slideshow */}
-      <section className="px-4 sm:px-8 py-12 sm:py-20">
+      <section className="px-3 sm:px-8 py-8 sm:py-20">
         <Slideshow />
       </section>
 
       {/* Polaroid Gallery */}
-      <section className="py-16 sm:py-24">
+      <section className="py-12 sm:py-24">
         <motion.h2
-          className="text-2xl sm:text-3xl font-bold text-center mb-12"
+          className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12"
           style={{ fontFamily: 'var(--font-fraunces)', color: '#1F2340' }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -119,9 +124,9 @@ export default function MemoriesPage() {
       </section>
 
       {/* Closing screen */}
-      <section className="py-20 sm:py-32 px-6">
+      <section className="py-16 sm:py-32 px-5 sm:px-6">
         <motion.div
-          className="max-w-lg mx-auto text-center flex flex-col items-center gap-8"
+          className="max-w-lg mx-auto text-center flex flex-col items-center gap-6 sm:gap-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-50px' }}
@@ -130,8 +135,9 @@ export default function MemoriesPage() {
         >
           {/* Decorative star */}
           <motion.svg
-            width="48"
-            height="48"
+            width="40"
+            height="40"
+            className="sm:w-12 sm:h-12"
             viewBox="0 0 48 48"
             fill="none"
             initial={{ rotate: -30, scale: 0.8 }}
@@ -146,15 +152,15 @@ export default function MemoriesPage() {
           </motion.svg>
 
           <p
-            className="text-xl sm:text-2xl leading-relaxed"
-            style={{ fontFamily: 'var(--font-fraunces)', color: '#1F2340' }}
+            className="text-lg sm:text-2xl leading-relaxed"
+            style={{ fontFamily: 'var(--font-fraunces)', color: '#1F2340', textWrap: 'balance' }}
           >
             {CLOSING_MESSAGE}
           </p>
 
           <motion.button
             onClick={handleReplay}
-            className="mt-6 px-8 py-3 rounded-full text-base font-semibold transition-all"
+            className="mt-4 sm:mt-6 px-8 py-3.5 rounded-full text-base font-semibold transition-all touch-manipulation min-w-[180px]"
             style={{
               fontFamily: 'var(--font-manrope)',
               color: '#1F2340',

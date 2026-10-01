@@ -48,12 +48,16 @@ export default function WishPage() {
       <FloatingOrbs />
 
       {/* Hero section */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 relative">
+      <section className="min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center px-5 sm:px-6 relative py-16">
         {/* Animated title */}
-        <div className="relative">
+        <div className="relative max-w-xl text-center">
           <h1
-            className="text-4xl sm:text-5xl md:text-7xl font-bold text-center leading-tight"
-            style={{ fontFamily: 'var(--font-fraunces)', color: '#1F2340' }}
+            className="text-3xl xs:text-4xl sm:text-5xl md:text-7xl font-bold text-center leading-tight tracking-tight"
+            style={{
+              fontFamily: 'var(--font-fraunces)',
+              color: '#1F2340',
+              textWrap: 'balance',
+            }}
           >
             {reduced ? (
               titleText
@@ -78,7 +82,7 @@ export default function WishPage() {
 
           {/* Hand-drawn underline */}
           <svg
-            className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[80%] max-w-[400px]"
+            className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[75%] max-w-[360px]"
             viewBox="0 0 400 20"
             fill="none"
             style={{ overflow: 'visible' }}
@@ -96,26 +100,26 @@ export default function WishPage() {
 
         {/* Scroll hint */}
         <motion.div
-          className="absolute bottom-8 flex flex-col items-center gap-2"
+          className="absolute bottom-6 sm:bottom-8 flex flex-col items-center gap-1.5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.5 }}
           transition={{ delay: 2.5, duration: 1 }}
         >
           <span
-            className="text-xs tracking-widest uppercase"
+            className="text-[10px] sm:text-xs tracking-widest uppercase"
             style={{ fontFamily: 'var(--font-manrope)', color: '#1F2340' }}
           >
             Scroll down
           </span>
           <motion.svg
-            width="20"
-            height="20"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
             stroke="#1F2340"
             strokeWidth="2"
             strokeLinecap="round"
-            animate={{ y: [0, 6, 0] }}
+            animate={{ y: [0, 5, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
           >
             <path d="M12 5v14M19 12l-7 7-7-7" />

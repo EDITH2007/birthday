@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Fraunces, Manrope } from 'next/font/google';
 import './globals.css';
 import CustomCursor from '@/components/CustomCursor';
@@ -20,9 +20,26 @@ const manrope = Manrope({
   weight: ['400', '500', '600', '700'],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+  themeColor: '#FFFBF2',
+};
+
 export const metadata: Metadata = {
   title: 'For Shreya',
   description: 'A handcrafted birthday surprise for someone special.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'For Shreya',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: 'For Shreya ✦',
     description: 'You\u2019ve got a birthday surprise waiting. Open it!',
@@ -41,7 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`} data-scroll-behavior="smooth">
       <body
-        className="antialiased"
+        className="antialiased overflow-x-clip"
         style={{
           fontFamily: 'var(--font-manrope), sans-serif',
           backgroundColor: '#FFFBF2',
@@ -56,3 +73,4 @@ export default function RootLayout({
     </html>
   );
 }
+
