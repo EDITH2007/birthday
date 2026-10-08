@@ -41,10 +41,8 @@ export default function CustomCursor() {
     }
 
     if (ringRef.current) {
-      const ringSize = isHovering ? 52 : 36;
-      ringRef.current.style.transform = `translate3d(${ringPos.current.x - ringSize / 2}px, ${ringPos.current.y - ringSize / 2}px, 0)`;
-      ringRef.current.style.width = `${ringSize}px`;
-      ringRef.current.style.height = `${ringSize}px`;
+      const ringScale = isHovering ? 1.35 : 1;
+      ringRef.current.style.transform = `translate3d(${ringPos.current.x - 18}px, ${ringPos.current.y - 18}px, 0) scale(${ringScale})`;
       ringRef.current.style.borderColor = isHovering
         ? 'rgba(124, 198, 254, 0.6)'
         : 'rgba(142, 155, 255, 0.35)';
