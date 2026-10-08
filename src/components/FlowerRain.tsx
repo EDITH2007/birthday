@@ -3,16 +3,32 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 
 export interface FlowerRainRef {
-  triggerBurst: (x: number, y: number) => void;
+  triggerBurst: (x?: number, y?: number) => void;
   stop: () => void;
 }
 
-// Target flower density tiers
-export const TARGET_DESKTOP = 180; // far ~80, mid ~70, near ~30
-export const TARGET_MOBILE = 90;   // far ~40, mid ~35, near ~15
-export const TARGET_LOW_END = 45;  // far ~20, mid ~18, near ~7
+export interface FlowerRainProps {
+  preset?: 'page1' | 'page2';
+  densityMultiplier?: number;
+}
 
-const MAX_PARTICLES = 260;
+// Page 1 Target Density Tiers (Default)
+export const PAGE1_DESKTOP = 180; // far ~80, mid ~70, near ~30
+export const PAGE1_MOBILE = 90;   // far ~40, mid ~35, near ~15
+export const PAGE1_LOW_END = 45;  // far ~20, mid ~18, near ~7
+
+// Page 2 Target Density Tiers (Thick Lush Shower)
+export const PAGE2_DESKTOP = 320; // far ~140, mid ~120, near ~60
+export const PAGE2_MOBILE = 160;  // far ~70, mid ~60, near ~30
+export const PAGE2_LOW_END = 80;   // far ~35, mid ~30, near ~15
+
+// Backward compatibility aliases
+export const TARGET_DESKTOP = PAGE1_DESKTOP;
+export const TARGET_MOBILE = PAGE1_MOBILE;
+export const TARGET_LOW_END = PAGE1_LOW_END;
+
+// Max particles in object pool (fits Page 2 desktop 320 + burst 40 + headroom = 460)
+const MAX_PARTICLES = 460;
 
 // Fast Precomputed Sine Lookup Table (1024 entries)
 const SIN_BITS = 10;
@@ -114,7 +130,7 @@ const PINK_COLOR_PALETTES = [
   { base: '#FDE3EA', tip: '#FFFFFF' },
 ];
 
-const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
+const FlowerRain = forwardRef<FlowerRainRef, FlowerRainProps>(({ preset = 'page1', densityMultiplier }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isStoppedRef = useRef(false);
 
@@ -152,24 +168,26 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    triggerBurst: (cx: number, cy: number) => {
+    triggerBurst: (cx?: number, cy?: number) => {
       if (isStoppedRef.current) return;
-      const burstCount = 32;
+      const targetX = cx !== undefined ? cx : (typeof window !== 'undefined' ? window.innerWidth / 2 : 200);
+      const targetY = cy !== undefined ? cy : (typeof window !== 'undefined' ? window.innerHeight * 0.4 : 200);
+      const burstCount = 36;
       let activated = 0;
       for (let i = 0; i < MAX_PARTICLES && activated < burstCount; i++) {
         if (!pActive.current[i] || pIsBurst.current[i]) {
           const angle = Math.random() * Math.PI * 2;
           const speed = 4.0 + Math.random() * 6.5;
 
-          pX.current[i] = cx;
-          pY.current[i] = cy;
+          pX.current[i] = targetX;
+          pY.current[i] = targetY;
           pVx.current[i] = fastCos(angle) * speed;
           pVy.current[i] = fastSin(angle) * speed - 1.5;
           pBaseVy.current[i] = 1.2 + Math.random() * 1.4;
           pLayer.current[i] = Math.random() > 0.4 ? 2 : 1;
           pSize.current[i] = pLayer.current[i] === 2 ? 34 + Math.random() * 10 : 24 + Math.random() * 8;
           pSpriteIdx.current[i] = Math.floor(Math.random() * 16) + (pLayer.current[i] === 0 ? 0 : 16);
-          pOpacity.current[i] = 0.95;
+          pOpacity.current[i] = 0.85;
           pIsBurst.current[i] = 1;
           pBurstLife.current[i] = 1.8;
           pActive.current[i] = 1;
@@ -201,14 +219,20 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
     const deviceMemory = typeof navigator !== 'undefined' && (navigator as any).deviceMemory ? (navigator as any).deviceMemory : 4;
     const isLowEnd = concurrency <= 4 || deviceMemory <= 4;
 
-    // Target particle counts
-    let targetCount = TARGET_DESKTOP;
+    // Determine target count based on preset & device
+    const isPage2 = preset === 'page2';
+    let baseTarget = isPage2 ? PAGE2_DESKTOP : PAGE1_DESKTOP;
     if (reducedMotion) {
-      targetCount = 15;
+      baseTarget = 15;
     } else if (isLowEnd) {
-      targetCount = TARGET_LOW_END;
+      baseTarget = isPage2 ? PAGE2_LOW_END : PAGE1_LOW_END;
     } else if (isMobile) {
-      targetCount = TARGET_MOBILE;
+      baseTarget = isPage2 ? PAGE2_MOBILE : PAGE1_MOBILE;
+    }
+
+    let targetCount = baseTarget;
+    if (densityMultiplier !== undefined && !reducedMotion) {
+      targetCount = Math.floor(baseTarget * densityMultiplier);
     }
 
     let currentActiveCount = targetCount;
@@ -226,7 +250,7 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
       let spriteIdx = 0;
       // Layers: 0 (far - pre-blurred softly), 1 (mid), 2 (near)
       [0, 1, 2].forEach((layer) => {
-        FLOWER_SVG_TEMPLATES.forEach((svgFunc, typeIdx) => {
+        FLOWER_SVG_TEMPLATES.forEach((svgFunc) => {
           PINK_COLOR_PALETTES.forEach((palette) => {
             const svgStr = svgFunc(palette.base, palette.tip);
             const img = new Image();
@@ -243,7 +267,7 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
                 atlasCtx.globalAlpha = 0.65;
                 atlasCtx.drawImage(img, cellX + 12, cellY + 12, 40, 40);
               } else {
-                atlasCtx.globalAlpha = layer === 1 ? 0.85 : 0.95;
+                atlasCtx.globalAlpha = layer === 1 ? 0.82 : 0.85;
                 atlasCtx.drawImage(img, cellX + 4, cellY + 4, 56, 56);
               }
               atlasCtx.restore();
@@ -261,23 +285,23 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
       let layer = 1;
       let baseVy = 1.4;
       let size = 26;
-      let opacity = 0.82;
+      let opacity = 0.78;
 
       if (layerRoll < 0.44) {
         layer = 0; // Far
         size = 14 + Math.random() * 5;
         baseVy = 0.7 + Math.random() * 0.4;
-        opacity = 0.5 + Math.random() * 0.15;
+        opacity = 0.45 + Math.random() * 0.15;
       } else if (layerRoll > 0.82) {
         layer = 2; // Near
-        size = 36 + Math.random() * 10;
+        size = 34 + Math.random() * 8;
         baseVy = 2.2 + Math.random() * 0.9;
-        opacity = 0.92 + Math.random() * 0.08;
+        opacity = 0.80 + Math.random() * 0.05; // Capped for contrast
       } else {
         layer = 1; // Mid
         size = 24 + Math.random() * 7;
         baseVy = 1.3 + Math.random() * 0.5;
-        opacity = 0.78 + Math.random() * 0.12;
+        opacity = 0.72 + Math.random() * 0.10;
       }
 
       const variantOffset = Math.floor(Math.random() * 16);
@@ -300,7 +324,7 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
       pTumbleSpeedY.current[i] = 0.015 + Math.random() * 0.02;
       pSpriteIdx.current[i] = spriteIdx;
       pLayer.current[i] = layer;
-      pOpacity.current[i] = opacity;
+      pOpacity.current[i] = Math.min(opacity, 0.85);
       pActive.current[i] = i < currentActiveCount ? 1 : 0;
       pIsBurst.current[i] = 0;
       pBurstLife.current[i] = 0;
@@ -332,6 +356,19 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
     };
 
     window.addEventListener('resize', handleResize);
+
+    // Scroll Velocity Wind Gust tracking (cheap, zero extra particles)
+    let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let scrollVxOffset = 0;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const deltaY = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+      if (Math.abs(deltaY) > 2) {
+        scrollVxOffset = Math.max(-2.5, Math.min(2.5, deltaY * 0.04));
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     // Mouse & Touch Interaction
     const handleMouseMove = (e: MouseEvent) => {
@@ -397,6 +434,9 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
       dt = Math.min(dt, 0.05); // Clamp dt to max 50ms
       lastTime = now;
 
+      // Smooth decay for scroll wind gust offset
+      scrollVxOffset *= 0.90;
+
       const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2.0);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
@@ -412,8 +452,8 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
           lowFpsConsecutive++;
           highFpsConsecutive = 0;
           if (lowFpsConsecutive >= 2) {
-            // Drop count by 20% down to floor of 40% target
-            const minFloor = Math.floor(targetCount * 0.4);
+            // Drop count by 20% down to floor of 50% target
+            const minFloor = Math.floor(targetCount * 0.5);
             currentActiveCount = Math.max(minFloor, Math.floor(currentActiveCount * 0.8));
             enableInteractions = false;
           }
@@ -488,7 +528,8 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
               pSwayPhase.current[i] += pSwaySpeed.current[i];
               const sway = fastSin(pSwayPhase.current[i]) * pSwayAmp.current[i];
 
-              pVx.current[i] = pVx.current[i] * 0.92 + (sway * 0.12 + globalWind * 0.3) * 0.08;
+              const layerScrollMult = pLayer.current[i] === 2 ? 0.35 : 0.18;
+              pVx.current[i] = pVx.current[i] * 0.92 + (sway * 0.12 + globalWind * 0.3 + scrollVxOffset * layerScrollMult) * 0.08;
               pVy.current[i] = pVy.current[i] * 0.95 + pBaseVy.current[i] * 0.05;
 
               // Cursor avoidance (only on mid/near layers)
@@ -575,7 +616,7 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
             px * dpr,
             py * dpr,
           );
-          ctx.globalAlpha = pOpacity.current[i] * opacityMult;
+          ctx.globalAlpha = Math.min(pOpacity.current[i], 0.85) * opacityMult;
           ctx.drawImage(atlasCanvas, sx, sy, 64, 64, -sz / 2, -sz / 2, sz, sz);
         }
       }
@@ -591,6 +632,7 @@ const FlowerRain = forwardRef<FlowerRainRef, {}>((_, ref) => {
       cancelAnimationFrame(animId);
       clearTimeout(resizeTimer);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('click', handleCanvasClick);

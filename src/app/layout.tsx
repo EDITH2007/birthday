@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Manrope } from 'next/font/google';
+import { Fraunces, Manrope, Instrument_Serif, Allura, Pinyon_Script } from 'next/font/google';
 import './globals.css';
 import CustomCursor from '@/components/CustomCursor';
 import FilmGrain from '@/components/FilmGrain';
@@ -18,6 +18,28 @@ const manrope = Manrope({
   variable: '--font-manrope',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
+});
+
+const instrument = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-instrument',
+  display: 'swap',
+  weight: ['400'],
+  style: ['normal', 'italic'],
+});
+
+const allura = Allura({
+  subsets: ['latin'],
+  variable: '--font-allura',
+  display: 'swap',
+  weight: ['400'],
+});
+
+const pinyon = Pinyon_Script({
+  subsets: ['latin'],
+  variable: '--font-pinyon',
+  display: 'swap',
+  weight: ['400'],
 });
 
 export const viewport: Viewport = {
@@ -56,7 +78,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`} data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${manrope.variable} ${instrument.variable} ${allura.variable} ${pinyon.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <body
         className="antialiased overflow-x-clip"
         style={{

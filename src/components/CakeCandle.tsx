@@ -6,7 +6,11 @@ import confetti from 'canvas-confetti';
 import { candleMomentText } from '@/content/wishes';
 import { SPRING_PLAYFUL, EASE_PRIMARY, DURATION } from '@/lib/easing';
 
-export default function CakeCandle() {
+interface CakeCandleProps {
+  onBlow?: () => void;
+}
+
+export default function CakeCandle({ onBlow }: CakeCandleProps = {}) {
   const [blown, setBlown] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
@@ -14,6 +18,10 @@ export default function CakeCandle() {
   const handleBlow = () => {
     if (blown) return;
     setBlown(true);
+
+    if (onBlow) {
+      onBlow();
+    }
 
     // Screen-wide ripple effect via confetti cannons from both sides
     confetti({

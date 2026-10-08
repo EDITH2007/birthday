@@ -8,9 +8,10 @@ import { EASE_PRIMARY, SPRING_PLAYFUL } from '@/lib/easing';
 
 interface OTPVaultProps {
   onUnlock: () => void;
+  onCorrectCode?: () => void;
 }
 
-export default function OTPVault({ onUnlock }: OTPVaultProps) {
+export default function OTPVault({ onUnlock, onCorrectCode }: OTPVaultProps) {
   const [values, setValues] = useState<string[]>(Array(5).fill(''));
   const [status, setStatus] = useState<'idle' | 'wrong' | 'correct'>('idle');
   const [wrongMessage, setWrongMessage] = useState('');
@@ -38,6 +39,10 @@ export default function OTPVault({ onUnlock }: OTPVaultProps) {
         if (code === SECRET_CODE.toUpperCase()) {
           setStatus('correct');
           sessionStorage.setItem('vault-unlocked', 'true');
+
+          if (onCorrectCode) {
+            onCorrectCode();
+          }
 
           confetti({
             particleCount: 60,

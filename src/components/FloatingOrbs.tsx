@@ -15,10 +15,10 @@ interface Orb {
 
 /* Only butter-yellow, sky-blue, mint and periwinkle — NO pink/peach/tangerine in glows */
 const COLORS = [
-  'rgba(255, 211, 90, 0.28)',
-  'rgba(124, 198, 254, 0.25)',
-  'rgba(126, 224, 181, 0.22)',
-  'rgba(142, 155, 255, 0.20)',
+  'rgba(255, 211, 90, 0.22)',
+  'rgba(124, 198, 254, 0.20)',
+  'rgba(126, 224, 181, 0.18)',
+  'rgba(142, 155, 255, 0.16)',
 ];
 
 export default function FloatingOrbs() {
@@ -33,7 +33,7 @@ export default function FloatingOrbs() {
       Array.from({ length: count }, (_, i) => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: isMobile ? 140 + Math.random() * 140 : 200 + Math.random() * 200,
+        size: isMobile ? 180 + Math.random() * 140 : 260 + Math.random() * 200,
         color: COLORS[i % COLORS.length],
         speedX: (Math.random() - 0.5) * 0.3,
         speedY: (Math.random() - 0.5) * 0.25,
@@ -95,8 +95,7 @@ export default function FloatingOrbs() {
           style={{
             width: orb.size,
             height: orb.size,
-            background: `radial-gradient(circle, ${orb.color}, transparent 70%)`,
-            filter: isMobile ? 'blur(20px)' : 'blur(45px)',
+            background: `radial-gradient(circle at center, ${orb.color} 0%, ${orb.color.replace(/[\d\.]+\)$/, '0.06)')} 40%, transparent 70%)`,
             willChange: 'transform',
             left: `${orb.x}%`,
             top: `${orb.y}%`,

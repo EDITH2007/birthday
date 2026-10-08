@@ -18,14 +18,21 @@ const ACCENT_COLORS = ['#FFD35A', '#7CC6FE', '#7EE0B5', '#FF9F43', '#8E9BFF'];
 
 function QuoteCard({ text, color }: { text: string; color: string }) {
   return (
-    <div className="relative py-6 px-6 sm:px-8">
+    <div
+      className="relative py-6 px-6 sm:px-8 rounded-2xl"
+      style={{
+        background: '#FFFBF2',
+        border: '2px solid rgba(31,35,64,0.08)',
+        boxShadow: '0 4px 20px rgba(31,35,64,0.06)',
+      }}
+    >
       {/* Oversized serif quotation mark */}
       <span
-        className="absolute -top-4 -left-2 text-7xl sm:text-8xl leading-none select-none"
+        className="absolute -top-4 left-3 text-7xl sm:text-8xl leading-none select-none"
         style={{
           fontFamily: 'var(--font-fraunces)',
           color,
-          opacity: 0.25,
+          opacity: 0.35,
         }}
       >
         &ldquo;
@@ -41,7 +48,7 @@ function QuoteCard({ text, color }: { text: string; color: string }) {
       </p>
       <div
         className="mt-4 h-1 w-16 rounded-full"
-        style={{ background: color, opacity: 0.5 }}
+        style={{ background: color, opacity: 0.7 }}
       />
     </div>
   );
@@ -103,17 +110,18 @@ function StickyNoteCard({ text, color }: { text: string; color: string }) {
     <div className="relative">
       {/* Tape piece */}
       <div
-        className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 rounded-sm opacity-60"
+        className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 rounded-sm opacity-80 z-10"
         style={{
-          background: `${color}80`,
+          background: `${color}`,
           transform: 'translate(-50%, 0) rotate(-2deg)',
         }}
       />
       <div
         className="rounded-lg px-6 sm:px-8 py-8 relative"
         style={{
-          background: `${color}18`,
-          boxShadow: `0 4px 20px ${color}15, 0 1px 3px rgba(31,35,64,0.06)`,
+          background: '#FFFBF2',
+          border: `2px solid ${color}`,
+          boxShadow: `0 4px 20px rgba(31,35,64,0.08)`,
           transform: 'rotate(-0.5deg)',
         }}
       >

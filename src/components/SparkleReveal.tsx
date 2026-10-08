@@ -55,20 +55,29 @@ export default function SparkleReveal() {
 
       <AnimatePresence>
         {revealed && (
-          <motion.p
+          <motion.div
             key="hidden-wish"
-            className="text-lg sm:text-xl italic text-center max-w-md"
+            className="p-6 rounded-2xl max-w-md text-center"
             style={{
-              fontFamily: 'var(--font-fraunces)',
-              color: '#1F2340',
+              background: '#FFFBF2',
+              border: '2px solid rgba(255, 211, 90, 0.5)',
+              boxShadow: '0 4px 20px rgba(31,35,64,0.06)',
             }}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={SPRING_PLAYFUL}
           >
-            {hiddenWish}
-          </motion.p>
+            <p
+              className="text-lg sm:text-xl italic"
+              style={{
+                fontFamily: 'var(--font-fraunces)',
+                color: '#1F2340',
+              }}
+            >
+              {hiddenWish}
+            </p>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
